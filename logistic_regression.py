@@ -1,32 +1,74 @@
-from typing import List
+from typing import List, Optional
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider
 from argparse import ArgumentParser
-from utils.lin_reg_utils import get_data, train_params
 
 
-def loss_fn(x, y, w: float, b: float):
+def fprop(x, w0, w1):
+    b: float = 0.0
+    y_hat = 1 / (1 + np.exp(-(w0 * x[:, 0] + w1 * x[:, 1] + b)))
+    return y_hat
+
+
+def loss_fn(x, y, w0, w1):
     n: int = x.shape[0]
-    err = (np.sum((y - (w * x + b)) ** 2)) / (2 * n)
-    return err
+    y_hat = fprop(x, w0, w1)
+    loss = -np.sum(y * np.log(y_hat) + (1-y) * np.log(1-y_hat))/n
+    return loss
+
+
+def get_data(rnd_seed: Optional[int]):
+    if rnd_seed is not None:
+        np.random.seed(rnd_seed)
+
+    num_pos: int = 200
+    num_neg: int = 200
+
+    gauss_std: float = 2
+    x_pos = np.random.multivariate_normal([-1, 1], [[gauss_std, 0], [0, gauss_std]], num_pos)
+    x_neg = np.random.multivariate_normal([1, -1], [[gauss_std, 0], [0, gauss_std]], 180)
+    x_neg = np.concatenate((x_neg, np.random.multivariate_normal([0, 5], [[0.01, 0], [0, 0.01]], 20)))
+    x = np.concatenate((x_pos, x_neg), axis=0)
+    y = np.array([1] * num_pos + [0] * num_neg)
+
+    return x, y
+
+
+def train_params(x, y, w0_init: float, w1_init: float, lr: float, steps: int):
+    n: int = x.shape[0]
+    w0: float = w0_init
+    w1: float = w1_init
+    w0_l: List[float] = [w0]
+    w1_l: List[float] = [w1]
+    for i in range(steps):
+        y_hat = fprop(x, w0, w1)
+        loss = loss_fn(x, y, w0, w1)
+
+        w0_grad = np.sum((y_hat - y) * x[:, 0]) / num_tot
+        w1_grad = np.sum((y_hat - y) * x[:, 1]) / num_tot
+        b_grad = np.sum((y_hat - y)) / num_tot
+
+        print(i, loss, w0_grad, w0, w1_grad, w1, b, b_grad)
+
+        w0 = w0 - lr * w0_grad
+        w1 = w1 - lr * w1_grad
+        b = b - lr * b_grad
+
+        plt.pause(0.5)
+        plt.draw()
 
 
 def main():
     parser: ArgumentParser = ArgumentParser()
     parser.add_argument('--lr', type=float, default=0.1, help="Learning rate")
-    parser.add_argument('--slope', type=float, default=3.0, help="Line slope")
-    parser.add_argument('--bias', type=float, default=0.0, help="Line bias")
-    parser.add_argument('--w_init', type=float, default=0.0, help="Initial value for w")
-    parser.add_argument('--b_init', type=float, default=0.0, help="Initial value for b")
-    parser.add_argument('--no_bias', action='store_true', default=False, help="")
+    parser.add_argument('--w0_init', type=float, default=0.0, help="Initial value for w0")
+    parser.add_argument('--w1_init', type=float, default=0.0, help="Initial value for w1")
     parser.add_argument('--steps', type=int, default=100, help="Number of training steps")
     args = parser.parse_args()
 
     # Get data
-    x, y = get_data(args.slope, args.bias, rnd_seed=42)
-    # y = np.sin(5*x) + np.random.normal(0, 0.5, size=x.shape)
-    # w_vals = np.linspace(-6, 6, 100)
+    x, y = get_data(rnd_seed=42)
 
     # train parameters
     w_l, b_l = train_params(x, y, args.w_init, args.b_init, args.lr, args.steps, args.no_bias)
