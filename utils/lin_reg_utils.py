@@ -14,8 +14,7 @@ def get_data(slope: float, bias: float, rnd_seed: Optional[int]):
 
 def train_params(x, y, w_init: float, b_init: float, lr: float, steps: int,
                  no_bias: bool) -> Tuple[List[float], List[float]]:
-    breakpoint()
-    n: int = x.shape[0]
+    n: int = y.shape[0]
     w: float = w_init
     b: float = b_init
     w_l: List[float] = [w]
