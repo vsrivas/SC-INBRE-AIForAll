@@ -1,0 +1,11 @@
+name: aiforall
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - tk
+  - numpy
+  - pillow
+  - pytorch
+  - matplotlib
+

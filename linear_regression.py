@@ -96,12 +96,12 @@ def main():
         axs[1].set_title(f'Loss Surface ({loss_val_itr:.2E})')
 
         line0.set_ydata(w_itr * x + b_itr)
-        line1.set_xdata(w_itr)
+        line1.set_xdata([w_itr])
         if args.no_bias:
-            line1.set_ydata(loss_val_itr)
+            line1.set_ydata([loss_val_itr])
         else:
-            line1.set_xdata(w_itr)
-            line1.set_ydata(b_itr)
+            line1.set_xdata([w_itr])
+            line1.set_ydata([b_itr])
 
     step_slider.on_changed(update)
 
