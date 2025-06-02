@@ -1,6 +1,7 @@
 data/
 models/
 old/
+temp.ps
 .ipynb_checkpoints/
 .idea/
 __pycache__/

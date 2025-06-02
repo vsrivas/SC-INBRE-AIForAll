@@ -81,7 +81,7 @@ def update_decision_boundary(ax, x, y, x0_mesh, x1_mesh, mesh_points, mesh_size,
 
 def main():
     parser: ArgumentParser = ArgumentParser()
-    parser.add_argument('--lr', type=float, default=0.1, help="Learning rate")
+    parser.add_argument('--lr', type=float, default=1, help="Learning rate")
     parser.add_argument('--w0_init', type=float, default=2.0, help="Initial value for w0")
     parser.add_argument('--w1_init', type=float, default=0.5, help="Initial value for w1")
     parser.add_argument('--steps', type=int, default=100, help="Number of training steps")
