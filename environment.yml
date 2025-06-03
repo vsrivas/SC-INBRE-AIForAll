@@ -9,4 +9,4 @@ dependencies:
   - pytorch
   - torchvision
   - matplotlib
-
+  - scikit-learn
